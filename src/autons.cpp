@@ -13,6 +13,7 @@ pros::ADIDigitalOut f_grab('B');
 pros::Motor l(2);
 pros::Motor f(10);
 
+
 void default_constants() {
   chassis.set_slew_min_power(80, 80);
   chassis.set_slew_distance(7, 7);
@@ -100,8 +101,8 @@ void right_2_mogo () {
   
   f_grab.set_value(true);
 
-  chassis.set_drive_pid(56, MAX_SPEED, true);
-  chassis.wait_until(54);
+  chassis.set_drive_pid(58, MAX_SPEED, true);
+  chassis.wait_until(56);
 
   chassis.set_turn_pid(-45, TURN_SPEED);
   chassis.wait_drive();
@@ -156,7 +157,7 @@ void right_2_mogo_wp () {
   
   f_grab.set_value(true);
 
-  chassis.set_drive_pid(65, MAX_SPEED, true);
+  chassis.set_drive_pid(67, MAX_SPEED, true);
   chassis.wait_drive();
 
   l_grab.set_value(false);
@@ -206,7 +207,7 @@ void right_2_mogo_wp () {
   
 }
 
-void skills() {
+void mirroredskills () {
   l_grab.set_value(false);
   pros::delay(300);
 
@@ -235,6 +236,11 @@ void skills() {
   pros::delay(2000);
 
   l_grab.set_value(false);
+  
+  pros::delay(1000);
+
+  chassis.set_drive_pid(-3, DRIVE_SPEED);
+  chassis.wait_drive();
 
   chassis.set_swing_pid(ez::LEFT_SWING, -140, SWING_SPEED);
   chassis.wait_drive();
@@ -242,10 +248,11 @@ void skills() {
   l.move_absolute(0, 200);
   pros::delay(500);
 
-  chassis.set_drive_pid(20, 50);
+  chassis.set_drive_pid(15, 50);
   chassis.wait_drive();
 
   l_grab.set_value(true);
+  pros::delay(500);
 
   l.move_absolute(-3000, 200);
 
@@ -260,21 +267,34 @@ void skills() {
 
   l_grab.set_value(false);
 
-  chassis.set_swing_pid(ez::LEFT_SWING, 0, SWING_SPEED);
-  chassis.wait_drive();
-  
-  chassis.set_drive_pid(35, DRIVE_SPEED, true);
+  chassis.set_swing_pid(ez::RIGHT_SWING, 0, SWING_SPEED);
   l.move_absolute(0, 200);
+  chassis.wait_drive();
+
+  pros::delay(1000);
+  
+  chassis.set_drive_pid(45, DRIVE_SPEED, true);
   chassis.wait_drive();
 
   chassis.set_swing_pid(ez::RIGHT_SWING, -90, SWING_SPEED);
   chassis.wait_drive();
 
-  chassis.set_drive_pid(7, DRIVE_SPEED);
+  chassis.set_drive_pid(21, DRIVE_SPEED);
   chassis.wait_drive();
   
   chassis.set_swing_pid(ez::RIGHT_SWING, -180, SWING_SPEED);
   chassis.wait_drive();
+
+  chassis.set_drive_pid(-1, DRIVE_SPEED, false);
+  chassis.wait_drive();
+}
+
+void skills() {
+  mirroredskills();
+  chassis.reset_pid_targets();
+  chassis.reset_drive_sensor();
+  chassis.reset_gyro();
+  mirroredskills();
 }
 
 void do_nothing() {}

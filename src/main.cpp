@@ -38,6 +38,7 @@ void initialize() {
   chassis.set_curve_default(0, 0);
 
   ez::as::auton_selector.add_autons({
+    Auton("skills\namazing prog skills", skills),
     Auton("Right wp\nGrab 2 neutral mogos and score 1 ally ring", right_2_mogo_wp),
     Auton("Grab Mogo\n\nGrab one mogo and come back", grab_mogo),
     Auton("2 right mogo\n\nGrab 2 neutral mogos (right side)", right_2_mogo),

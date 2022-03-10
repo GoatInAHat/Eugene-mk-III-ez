@@ -13,4 +13,6 @@ void right_2_mogo_wp();
 
 void do_nothing();
 
+void skills();
+
 void default_constants();

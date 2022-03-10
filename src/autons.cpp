@@ -71,7 +71,7 @@ void right_2_mogo () {
   l_grab.set_value(false);
   f_grab.set_value(false);
 
-  chassis.set_drive_pid(40, MAX_SPEED, false);
+  chassis.set_drive_pid(42, MAX_SPEED, false);
   
   chassis.wait_until(37);
   l_grab.set_value(true);
@@ -127,7 +127,7 @@ void right_2_mogo_wp () {
   l_grab.set_value(false);
   f_grab.set_value(false);
 
-  chassis.set_drive_pid(40, MAX_SPEED, false);
+  chassis.set_drive_pid(42, MAX_SPEED, false);
   
   chassis.wait_until(37);
   l_grab.set_value(true);
@@ -167,7 +167,7 @@ void right_2_mogo_wp () {
   chassis.set_turn_pid(0, TURN_SPEED);
   chassis.wait_drive();
 
-  chassis.set_drive_pid(-15, MAX_SPEED, false);
+  chassis.set_drive_pid(-10, MAX_SPEED, false);
   chassis.wait_drive();
 
   f_grab.set_value(false);
@@ -178,7 +178,7 @@ void right_2_mogo_wp () {
   chassis.set_swing_pid(ez::LEFT_SWING, 90, SWING_SPEED);
   chassis.wait_drive();
 
-  chassis.set_drive_pid(15, 70);
+  chassis.set_drive_pid(10, 70);
   chassis.wait_drive();
   
   l_grab.set_value(true);
@@ -204,6 +204,77 @@ void right_2_mogo_wp () {
 
   chassis.set_drive_pid(-10, 70);
   
+}
+
+void skills() {
+  l_grab.set_value(false);
+  pros::delay(300);
+
+  chassis.set_drive_pid(5, 50);
+  chassis.wait_drive();
+  l_grab.set_value(true);
+
+  chassis.set_swing_pid(ez::RIGHT_SWING, 105, SWING_SPEED);
+  chassis.wait_drive();
+
+  chassis.set_drive_pid(-93, DRIVE_SPEED, true);
+  chassis.wait_drive();
+
+
+
+  chassis.set_swing_pid(ez::RIGHT_SWING, -87, SWING_SPEED);
+  l.move_absolute(-4000, 200);
+  chassis.wait_until(-83);
+
+  chassis.set_drive_pid(20, DRIVE_SPEED, true);
+  chassis.wait_drive();
+
+
+  l.move_absolute(-2000, 200);
+
+  pros::delay(2000);
+
+  l_grab.set_value(false);
+
+  chassis.set_swing_pid(ez::LEFT_SWING, -140, SWING_SPEED);
+  chassis.wait_drive();
+
+  l.move_absolute(0, 200);
+  pros::delay(500);
+
+  chassis.set_drive_pid(20, 50);
+  chassis.wait_drive();
+
+  l_grab.set_value(true);
+
+  l.move_absolute(-3000, 200);
+
+  chassis.set_drive_pid(-40, DRIVE_SPEED, true);
+  chassis.wait_drive();
+
+  chassis.set_swing_pid(ez::LEFT_SWING, -90, SWING_SPEED);
+  chassis.wait_drive();
+
+  chassis.set_drive_pid(10, DRIVE_SPEED, true);
+  chassis.wait_drive();
+
+  l_grab.set_value(false);
+
+  chassis.set_swing_pid(ez::LEFT_SWING, 0, SWING_SPEED);
+  chassis.wait_drive();
+  
+  chassis.set_drive_pid(35, DRIVE_SPEED, true);
+  l.move_absolute(0, 200);
+  chassis.wait_drive();
+
+  chassis.set_swing_pid(ez::RIGHT_SWING, -90, SWING_SPEED);
+  chassis.wait_drive();
+
+  chassis.set_drive_pid(7, DRIVE_SPEED);
+  chassis.wait_drive();
+  
+  chassis.set_swing_pid(ez::RIGHT_SWING, -180, SWING_SPEED);
+  chassis.wait_drive();
 }
 
 void do_nothing() {}

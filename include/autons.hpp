@@ -5,14 +5,18 @@
 
 extern Drive chassis;
 
-void grab_mogo();
+void wp();
 
-void right_2_mogo();
+void basic_3_disk();
 
-void right_2_mogo_wp();
+void right_side();
+
+void right_side_8_disk();
 
 void do_nothing();
 
-void skills();
+void roller_and_shoot();
 
-void default_constants();
+void turn_to_roller();
+
+void skills();

@@ -1,7 +1,7 @@
 {
     "py/object": "pros.conductor.project.Project",
     "py/state": {
-        "project_name": "Eugene Mk. III EZ",
+        "project_name": "Catapult",
         "target": "v5",
         "templates": {
             "EZ-Template": {
@@ -187,6 +187,9 @@
                 "version": "3.5.4"
             }
         },
-        "upload_options": {}
+        "upload_options": {
+            "after": "run",
+            "description": "throws disc"
+        }
     }
 }

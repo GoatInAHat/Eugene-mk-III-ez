@@ -45,14 +45,15 @@ void initialize() {
     chassis.set_curve_default(0, 0);
 
     ez::as::auton_selector.add_autons({
-        Auton("SKILLS\nDONT RUN", skills),
-        // Auton("basic 3 disk and roller", basic_3_disk),
         Auton("right side 6 disk", right_side),
-        Auton("right side 8 disk", right_side_8_disk),
+        Auton("Left side 5 disk + left roller", left_side_5_disk),
+        Auton("Left Side Full Win Point", wp),
+        Auton("Right Side 8 Disk + right roller", right_side_8_disk),
+        // Auton("basic 3 disk and roller", basic_3_disk),
         Auton("Turn to roller\ni hope this is the right one", turn_to_roller),
-        Auton("Select an auto", do_nothing),
-        Auton("Win Point", wp),
         Auton("Roller and shoot", roller_and_shoot),
+        Auton("SKILLS\nDONT RUN", skills),
+        Auton("Select an auto", do_nothing),
         
     });
  

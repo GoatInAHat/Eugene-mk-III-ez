@@ -7,6 +7,8 @@ extern Drive chassis;
 
 void wp();
 
+void left_side_5_disk();
+
 void basic_3_disk();
 
 void right_side();

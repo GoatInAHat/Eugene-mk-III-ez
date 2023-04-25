@@ -1,11 +1,13 @@
 #include "autons.hpp"
 #include "EZ-Template/util.hpp"
 #include "main.h"
+#include "pros/adi.hpp"
 #include "pros/motors.h"
 #include "pros/rtos.h"
+#include "pros/rtos.hpp"
 
 const int DRIVE_SPEED = 110;
-const int TURN_SPEED  = 90;
+const int TURN_SPEED  = 80;
 const int SWING_SPEED = 80;
 
 const int MAX_SPEED = 127;
@@ -17,6 +19,8 @@ pros::Motor intake(10);
 pros::Motor cata(11);
 pros::ADIDigitalOut b_rl('B');
 pros::ADIDigitalOut ex('D');
+pros::ADIDigitalOut intake_piston('G');
+
 
 
 void default_constants() {
@@ -50,8 +54,11 @@ void reload() {
     pros::delay(10);
 }
 
-void sr(bool restart_intake) {
-    intake.move(0);
+void sr(bool restart_intake, bool override_pause) {
+    if (!override_pause) {
+        intake.move(0);
+    }
+    
     cata.move(-200);
     pros::delay(200);
 
@@ -62,7 +69,7 @@ void sr(bool restart_intake) {
         }
     }
 
-    if (restart_intake) {
+    if (restart_intake && !override_pause) {
         intake.move(-200);
     }
 
@@ -72,11 +79,25 @@ void sr(bool restart_intake) {
 //shoot then reload asyncronously
 void sr_async(bool restart_intake) {
     pros::Task task{[=] {
-        sr(restart_intake);
+        sr(restart_intake, false);
         pros::delay(10);
     }};
 
     pros::delay(300);
+}
+
+//shoot then reload asyncronously
+void sr_async_no_override(bool restart_intake) {
+    pros::Task task{[=] {
+        sr(restart_intake, true);
+        pros::delay(10);
+    }};
+
+    pros::delay(300);
+}
+
+void right_side_6_disk () {
+
 }
 
 void basic_3_disk() {
@@ -106,77 +127,66 @@ void basic_3_disk() {
 }
 
 void right_side() {
+    //start intake
     intake.move(-200);
 
+    //drive forward to pick up first disk (+ 2 preloads)
     chassis.set_drive_pid(110, 80);
     chassis.wait_drive();
 
+    //turn to correct shooting angle for first 3 shot
     chassis.set_turn_pid(-135, TURN_SPEED);
-    chassis.wait_drive();
-
-    chassis.set_drive_pid(-20, MAX_SPEED);
     chassis.wait_drive();
 
     sr_async(true);
 
-    pros::delay(1200);
-
-    chassis.set_drive_pid(45, 70);
-    chassis.wait_drive();
-
-    chassis.set_drive_pid(-23, DRIVE_SPEED);
-    chassis.wait_drive();
-
+    //drive back and face 3 disk line
     chassis.set_turn_pid(-225, TURN_SPEED);
     chassis.wait_drive();
 
+    //pick up 3 middle disks
     chassis.set_drive_pid(70, 50);
     chassis.wait_drive();
 
-    chassis.set_swing_pid(ez::RIGHT_SWING, -270, SWING_SPEED);
-    chassis.wait_drive();
+    //turn and shoot
+    //-289
 
-    chassis.set_drive_pid(20, DRIVE_SPEED);
-    chassis.wait_drive();
-
-    chassis.set_turn_pid(-160, TURN_SPEED);
-    chassis.wait_drive();
-
-    // chassis.set_drive_pid(15, 40, true);
-    // chassis.wait_drive();
-
-    chassis.set_drive_pid(-7, MAX_SPEED);
+    chassis.set_turn_pid(-150, TURN_SPEED);
     chassis.wait_drive();
 
     intake.move(0);
 
+    sr_async(true);
+
+    chassis.set_swing_pid(ez::RIGHT_SWING, -260, SWING_SPEED);
+    chassis.wait_drive();
+
+    intake_piston.set_value(true);
+
+    chassis.set_drive_pid(55, 70);
+    chassis.wait_until(50);
+
+    intake_piston.set_value(false);
+
+    chassis.set_drive_pid(25, 15);
+    chassis.wait_drive();
+
+    chassis.set_turn_pid(-170, TURN_SPEED);
+    chassis.wait_drive();
+
     sr_async(false);
-
-    chassis.wait_drive();
-
-    chassis.set_drive_pid(20, 40);
-    chassis.wait_drive();
-
-    chassis.set_turn_pid(-225, TURN_SPEED);
-    chassis.wait_drive();
-
-    chassis.set_drive_pid(60, DRIVE_SPEED);
-    chassis.wait_drive();
 
     chassis.set_turn_pid(-180, TURN_SPEED);
     chassis.wait_drive();
 
-    chassis.set_drive_pid(30, DRIVE_SPEED);
+    chassis.set_drive_pid(60, DRIVE_SPEED);
+
+    chassis.set_swing_pid(ez::RIGHT_SWING, -190, SWING_SPEED);
+    intake.move_relative(400, 200);
     chassis.wait_drive();
 
-    chassis.set_swing_pid(ez::LEFT_SWING, -160, 40);
-    pros::delay(500);
 
-    intake.move_relative(800, 200);
 }
-
-
-
 
 
 void right_side_8_disk() {
@@ -310,6 +320,72 @@ void left_side_5_disk() {
     sr_async(true);
 }
 
+void left_side_8_disk() {
+    chassis.set_swing_pid(ez::RIGHT_SWING, -10, 30);
+    pros::delay(300);
+    
+    intake.move_relative(400, 200);
+    pros::delay(300);
+
+    chassis.set_swing_pid(ez::RIGHT_SWING, 0, SWING_SPEED);
+    chassis.wait_drive();
+
+    chassis.set_drive_pid(-43, 50, true);
+    chassis.wait_drive();
+
+    chassis.set_turn_pid(-10, TURN_SPEED);
+    chassis.wait_drive();
+
+    sr_async(true);
+
+    chassis.set_drive_pid(15, DRIVE_SPEED);
+    chassis.wait_drive();
+
+    chassis.set_turn_pid(165, TURN_SPEED);
+    chassis.wait_drive();
+
+    intake_piston.set_value(true);
+
+    chassis.set_drive_pid(18, 70);
+    chassis.wait_drive();
+
+    intake_piston.set_value(false);
+
+    pros::delay(2000);
+
+    chassis.set_drive_pid(-20, DRIVE_SPEED);
+    chassis.wait_drive();
+
+    chassis.set_turn_pid(-10, TURN_SPEED);
+    chassis.wait_drive();
+
+    chassis.set_drive_pid(-25, MAX_SPEED, true);
+    chassis.wait_until(-20);
+    sr_async(true);
+    chassis.wait_drive();
+
+    chassis.set_turn_pid(-105, TURN_SPEED);
+    chassis.wait_drive();
+
+    intake_piston.set_value(true);
+
+    chassis.set_drive_pid(48, DRIVE_SPEED);
+    chassis.wait_drive();
+
+    pros::delay(200);
+
+    intake_piston.set_value(false);
+    pros::delay(1000);
+
+    chassis.set_turn_pid(-23, TURN_SPEED);
+    chassis.wait_drive();
+
+    chassis.set_drive_pid(-20, MAX_SPEED, true);
+    chassis.wait_until(-15);
+    sr_async(false);
+    chassis.wait_drive();
+}
+
 void wp() {
     chassis.set_swing_pid(ez::RIGHT_SWING, -10, 30);
     pros::delay(300);
@@ -323,44 +399,59 @@ void wp() {
     chassis.set_drive_pid(-45, 50, true);
     chassis.wait_drive();
 
-    chassis.set_turn_pid(-10, TURN_SPEED);
+    chassis.set_turn_pid(-12, TURN_SPEED);
     chassis.wait_drive();
 
     sr_async(true);
     chassis.wait_drive();
 
-    chassis.set_drive_pid(10, DRIVE_SPEED);
-
-    chassis.set_turn_pid(-105, TURN_SPEED);
+    chassis.set_swing_pid(ez::RIGHT_SWING, -135, SWING_SPEED);
     chassis.wait_drive();
 
-    chassis.set_drive_pid(65, 80);
+    intake_piston.set_value(true);
+
+    chassis.set_drive_pid(22, MAX_SPEED);
     chassis.wait_drive();
 
-    chassis.set_drive_pid(50, 30);
+    intake_piston.set_value(false);
+
+    intake.move(-200);
+
+    chassis.set_drive_pid(20, 30);
     chassis.wait_drive();
 
-    chassis.set_turn_pid(-37, TURN_SPEED);
+    chassis.set_drive_pid(40, DRIVE_SPEED, true);
     chassis.wait_drive();
 
-    chassis.set_drive_pid(-55, MAX_SPEED, true);
-    chassis.wait_until(-45);
+    chassis.set_turn_pid(-30, 45);
+    chassis.wait_drive();
 
     sr_async(true);
 
-    chassis.set_drive_pid(25, MAX_SPEED);
+    chassis.set_turn_pid(-135, TURN_SPEED);
     chassis.wait_drive();
+
+    chassis.set_drive_pid(200, 70);
+    chassis.wait_drive();
+
+    chassis.set_turn_pid(-80, TURN_SPEED);
+    chassis.wait_drive();
+
+    chassis.set_drive_pid(-25, MAX_SPEED, true);
+    chassis.wait_until(-20);
+    sr_async_no_override(false);
+    chassis.wait_drive();
+
+    chassis.set_turn_pid(-127, 45);
+    chassis.wait_drive();
+
+    chassis.set_drive_pid(80, MAX_SPEED);
+    chassis.wait_until(70);
+
+    pros::delay(200);
+
+    intake.move_relative(400, 200);
     
-    chassis.set_turn_pid(-135, 40);
-    chassis.wait_drive();
-
-    chassis.set_drive_pid(120, 50, true);
-    chassis.wait_drive();
-
-    chassis.set_turn_pid(-63, TURN_SPEED);
-    chassis.wait_drive();
-
-    sr_async(false);
 };
 
 void turn_to_roller() {
@@ -598,7 +689,7 @@ void skills() {
     chassis.set_turn_pid(225, DRIVE_SPEED);
     chassis.wait_drive();
 
-    ex.set_value(true);
+    ex.set_value(false);
 }
 
 void do_nothing() {}

@@ -22,3 +22,5 @@ void roller_and_shoot();
 void turn_to_roller();
 
 void skills();
+
+void left_side_8_disk();
